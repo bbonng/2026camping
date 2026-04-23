@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>야영 안전교육 | 대구일중학교 1학년</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Serif+KR:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --forest:   #192B1D;
+  --forest2:  #1F3524;
+  --forest3:  #2A4A30;
+  --moss:     #4A7C59;
+  --sage:     #7BAE8A;
+  --fire:     #E8612A;
+  --ember:    #F4A44A;
+  --cream:    #F5E6C8;
+  --sand:     #C8A97A;
+  --bark:     #6B4C2A;
+  --danger:   #D93D2B;
+  --white:    #FAF5EC;
+  --dim:      rgba(245,230,200,0.72);
+  --left-pad: 22%;   /* 챕터 슬라이드 왼쪽 여백 */
+  --content-pad: 7%; /* 일반 슬라이드 좌우 여백 */
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--forest);
+  color:var(--cream);font-family:'Noto Sans KR',sans-serif;-webkit-font-smoothing:antialiased}
+
+/* 배경 노이즈 텍스처 */
+body::before{content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.012'%3E%3Ccircle cx='40' cy='40' r='1'/%3E%3Ccircle cx='10' cy='10' r='1'/%3E%3Ccircle cx='70' cy='10' r='1'/%3E%3Ccircle cx='10' cy='70' r='1'/%3E%3Ccircle cx='70' cy='70' r='1'/%3E%3C/g%3E%3C/svg%3E");
+  pointer-events:none;z-index:0}
+
+/* ── 슬라이드 엔진 ── */
+#deck{position:relative;width:100%;height:100vh}
+.slide{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  opacity:0;transform:translateX(24px);pointer-events:none;
+  transition:opacity .32s ease,transform .32s ease;z-index:1
+}
+.slide.active{opacity:1;transform:translateX(0);pointer-events:all}
+
+/* ── 프로그레스 ── */
+#prog-wrap{position:fixed;bottom:0;left:0;right:0;height:3px;
+  background:rgba(245,230,200,.08);z-index:100}
+#prog-bar{height:100%;background:linear-gradient(90deg,var(--moss),var(--ember));
+  transition:width .4s ease}
+
+/* ── 네비 ── */
+#nav{position:fixed;bottom:18px;right:28px;display:flex;gap:8px;z-index:100}
+.nbtn{width:42px;height:42px;border-radius:50%;
+  border:1.5px solid rgba(245,230,200,.18);
+  background:rgba(245,230,200,.05);color:var(--cream);font-size:16px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .2s;backdrop-filter:blur(6px)}
+.nbtn:hover{background:var(--moss);border-color:var(--moss)}
+#counter{position:fixed;bottom:26px;left:28px;font-size:13px;
+  color:var(--sage);z-index:100;font-weight:600;letter-spacing:.5px}
+#counter em{color:var(--ember);font-style:normal}
+
+/* ── 공통 레이아웃 ── */
+.slide-inner{
+  flex:1;display:flex;flex-direction:column;justify-content:center;
+  padding:28px 5% 64px;
+  width:100%
+}
+
+/* ── 태그 ── */
+.tag{display:inline-flex;align-items:center;gap:6px;
+  font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  padding:5px 14px;border-radius:20px;border:1px solid;margin-bottom:14px;width:fit-content}
+.tg{color:var(--sage);border-color:rgba(123,174,138,.35);background:rgba(123,174,138,.08)}
+.tf{color:var(--ember);border-color:rgba(244,164,74,.35);background:rgba(244,164,74,.08)}
+.tr{color:#F87171;border-color:rgba(248,113,113,.35);background:rgba(248,113,113,.08)}
+.ts{color:var(--sand);border-color:rgba(200,169,122,.35);background:rgba(200,169,122,.08)}
+
+/* ── 타이포 ── */
+.head1{font-family:'Noto Serif KR',serif;
+  font-size:clamp(38px,5.8vw,68px);font-weight:900;line-height:1.2;
+  color:var(--white);margin-bottom:10px}
+.head1 .fg{color:var(--fire)}
+.head1 .em{color:var(--ember)}
+.head1 .sg{color:var(--sage)}
+
+.head2{font-family:'Noto Serif KR',serif;
+  font-size:clamp(28px,3.8vw,44px);font-weight:700;line-height:1.25;
+  color:var(--white);margin-bottom:14px}
+.head2 .sub{font-size:.52em;color:var(--sage);font-weight:500;display:block;
+  margin-bottom:6px;font-family:'Noto Sans KR',sans-serif;letter-spacing:.5px}
+
+.body{font-size:clamp(16px,1.6vw,20px);line-height:1.9;color:var(--dim)}
+.body strong{color:var(--cream)}
+
+.rule-line{width:44px;height:3px;background:var(--fire);border-radius:2px;margin:12px 0 18px}
+.divider{width:100%;height:1px;background:rgba(245,230,200,.1);margin:12px 0}
+
+/* ── 2컬럼 ── */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+.cols3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+/* ── 카드 ── */
+.card{background:rgba(245,230,200,.045);border:1px solid rgba(245,230,200,.1);
+  border-radius:16px;padding:20px 22px}
+.card-f{border-color:rgba(232,97,42,.3);background:rgba(232,97,42,.07)}
+.card-g{border-color:rgba(74,124,89,.4);background:rgba(74,124,89,.1)}
+.card-r{border-color:rgba(217,61,43,.35);background:rgba(217,61,43,.08)}
+.card-s{border-color:rgba(200,169,122,.3);background:rgba(200,169,122,.07)}
+.card-b{border-color:rgba(107,76,42,.5);background:rgba(107,76,42,.16)}
+
+.ctitle{font-size:clamp(14px,1.4vw,17px);font-weight:700;letter-spacing:.3px;
+  margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.ctitle.sg{color:var(--sage)}.ctitle.em{color:var(--ember)}
+.ctitle.rd{color:#F87171}.ctitle.wh{color:var(--cream)}
+
+/* ── 리스트 ── */
+.ilist{list-style:none;display:flex;flex-direction:column;gap:9px}
+.ilist li{display:flex;align-items:flex-start;gap:10px;
+  font-size:clamp(15px,1.55vw,18px);line-height:1.7;color:var(--dim)}
+.ilist li strong{color:var(--cream)}
+.ilist li::before{content:'—';color:var(--sage);flex-shrink:0;font-weight:700;margin-top:2px}
+.ilist.red li::before{content:'✕';color:#F87171}
+.ilist.chk li::before{content:'✓';color:var(--sage)}
+
+/* ── 배너 ── */
+.banner{border-radius:12px;padding:14px 18px;
+  display:flex;align-items:flex-start;gap:12px;margin-top:12px}
+.bn-f{background:rgba(232,97,42,.1);border:1px solid rgba(232,97,42,.28)}
+.bn-r{background:rgba(217,61,43,.1);border:1px solid rgba(217,61,43,.28)}
+.bn-g{background:rgba(74,124,89,.13);border:1px solid rgba(74,124,89,.32)}
+.bn-s{background:rgba(200,169,122,.09);border:1px solid rgba(200,169,122,.24)}
+.bn-b{background:rgba(107,76,42,.18);border:1px solid rgba(107,76,42,.4)}
+.bi{font-size:22px;flex-shrink:0;margin-top:1px}
+.bt{font-size:clamp(14px,1.4vw,17px);line-height:1.75;color:var(--dim)}
+.bt strong{color:var(--cream)}
+
+/* ── 스텝 ── */
+.steps{display:flex;flex-direction:column;gap:9px}
+.step{display:flex;align-items:flex-start;gap:14px;
+  background:rgba(245,230,200,.045);border:1px solid rgba(245,230,200,.08);
+  border-radius:12px;padding:14px 18px}
+.snum{width:34px;height:34px;border-radius:50%;background:var(--fire);
+  color:var(--white);font-size:15px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sbody{font-size:clamp(14px,1.45vw,17px);line-height:1.7;color:var(--dim)}
+.sbody strong{color:var(--cream);display:block;margin-bottom:2px;font-size:1.05em}
+
+/* ── 애니 ── */
+@keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.slide.active .a{animation:up .48s ease forwards;opacity:0}
+.slide.active .a:nth-child(1){animation-delay:.04s}
+.slide.active .a:nth-child(2){animation-delay:.13s}
+.slide.active .a:nth-child(3){animation-delay:.22s}
+.slide.active .a:nth-child(4){animation-delay:.31s}
+.slide.active .a:nth-child(5){animation-delay:.40s}
+.slide.active .a:nth-child(6){animation-delay:.49s}
+.slide.active .a:nth-child(7){animation-delay:.58s}
+
+/* ════════════════════════
+   커버 전용
+════════════════════════ */
+#s0{
+  background:
+    radial-gradient(ellipse 55% 50% at 78% 40%,rgba(232,97,42,.2) 0%,transparent 58%),
+    radial-gradient(ellipse 45% 55% at 15% 75%,rgba(74,124,89,.22) 0%,transparent 52%),
+    var(--forest);
+  flex-direction:row;align-items:center
+}
+.cover-left{
+  flex:0 0 50%;display:flex;flex-direction:column;
+  justify-content:center;padding:60px 0 60px 8%
+}
+.cover-kicker{font-size:13px;font-weight:700;letter-spacing:3px;
+  color:var(--sage);text-transform:uppercase;margin-bottom:20px}
+.cover-title{font-family:'Noto Serif KR',serif;
+  font-size:clamp(52px,8vw,96px);font-weight:900;line-height:1.0;
+  color:var(--white);margin-bottom:12px}
+.cover-title span{color:var(--fire)}
+.cover-sub{font-size:clamp(20px,2.5vw,28px);font-weight:700;
+  color:var(--ember);margin-bottom:16px}
+.cover-school{font-size:15px;color:var(--sage);font-weight:500}
+
+.cover-right{
+  flex:0 0 50%;display:flex;align-items:center;justify-content:center;
+  padding:40px 6% 40px 2%
+}
+.icon-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.deco{width:130px;height:130px;border-radius:24px;
+  background:rgba(245,230,200,.05);border:1px solid rgba(245,230,200,.1);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;font-size:42px;transition:transform .2s}
+.deco:hover{transform:translateY(-4px);border-color:rgba(245,230,200,.2)}
+.deco span{font-size:13px;color:var(--sage);font-weight:600;letter-spacing:.3px}
+
+/* ════════════════════════
+   챕터 슬라이드
+   상단 정렬 / 왼쪽 22% 지점
+════════════════════════ */
+.ch-slide{
+  background:
+    radial-gradient(ellipse 55% 65% at 82% 55%,rgba(74,124,89,.2) 0%,transparent 60%),
+    var(--forest2);
+  justify-content:flex-start;
+  padding-top:52px;
+  padding-left:22%;
+  padding-right:8%;
+  padding-bottom:72px;
+  /* 왼쪽 포인트 라인 */
+  border-left:4px solid var(--moss);
+}
+.ch-bg-num{
+  position:absolute;right:48px;bottom:24px;
+  font-family:'Noto Serif KR',serif;font-size:260px;font-weight:900;
+  color:rgba(245,230,200,.04);line-height:1;pointer-events:none;user-select:none
+}
+.ch-label{
+  font-size:11px;font-weight:700;letter-spacing:3.5px;
+  color:var(--moss);text-transform:uppercase;margin-bottom:20px;
+  display:flex;align-items:center;gap:10px;
+}
+.ch-label::before{
+  content:'';display:inline-block;
+  width:24px;height:2px;background:var(--moss);border-radius:1px;
+}
+.ch-title{
+  font-family:'Noto Serif KR',serif;
+  font-size:clamp(40px,6vw,68px);font-weight:900;line-height:1.15;
+  color:var(--white);margin-bottom:24px
+}
+.ch-desc{
+  font-size:clamp(16px,1.7vw,20px);color:var(--dim);
+  max-width:520px;line-height:1.9
+}
+
+/* ════════════════════════
+   경보 슬라이드 (교육활동·핸드폰)
+════════════════════════ */
+.alert-slide{
+  background:
+    radial-gradient(ellipse 55% 50% at 70% 38%,rgba(217,61,43,.2) 0%,transparent 60%),
+    #1C1010
+}
+
+/* ════════════════════════
+   아웃트로
+════════════════════════ */
+#s-outro{
+  background:
+    radial-gradient(ellipse 65% 50% at 50% 50%,rgba(244,164,74,.13) 0%,transparent 62%),
+    var(--forest);
+  justify-content:center;align-items:center;text-align:center;padding:0 10%
+}
+.pledge{background:rgba(245,230,200,.06);border:1px solid rgba(245,230,200,.14);
+  border-radius:18px;padding:32px 40px;max-width:700px;margin:0 auto}
+.pledge p{font-size:clamp(15px,1.6vw,19px);font-weight:500;line-height:2.3;color:var(--cream)}
+.pledge p strong{color:var(--ember)}
+.pill-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:22px}
+.pill{padding:7px 18px;border-radius:30px;font-size:13px;font-weight:700;
+  background:rgba(232,97,42,.1);border:1px solid rgba(232,97,42,.28);color:var(--ember)}
+.pill.sg{background:rgba(74,124,89,.14);border-color:rgba(74,124,89,.38);color:var(--sage)}
+
+/* 뱀 강조 박스 */
+.snake-box{background:rgba(107,76,42,.22);border:2px solid rgba(107,76,42,.55);
+  border-radius:18px;padding:24px 28px}
+.snake-box-title{font-family:'Noto Serif KR',serif;font-size:22px;font-weight:900;
+  color:var(--ember);margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.snake-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.snake-cell{text-align:center;padding:18px 12px;
+  background:rgba(245,230,200,.05);border-radius:12px}
+.snake-cell .sci{font-size:38px;margin-bottom:10px}
+.snake-cell .sct{font-weight:700;font-size:16px;color:var(--white);margin-bottom:8px}
+.snake-cell .scd{font-size:13px;color:var(--dim);line-height:1.65}
+
+/* 아프면 즉시 배너 (강조) */
+.sick-banner{
+  background:rgba(74,124,89,.18);
+  border:2px solid rgba(74,124,89,.45);
+  border-radius:14px;padding:18px 22px;
+  display:flex;align-items:flex-start;gap:14px;margin-top:16px
+}
+.sick-icon{font-size:28px;flex-shrink:0}
+.sick-text{font-size:clamp(14px,1.4vw,17px);line-height:1.8;color:var(--dim)}
+.sick-text strong{color:var(--cream);font-size:1.05em}
+
+/* ════════════════════════════════════
+   챕터 슬라이드 개별 포지션
+════════════════════════════════════ */
+
+/* CH01 이동 안전 — 하단 왼쪽 */
+#ch01{
+  justify-content:flex-end;
+  padding-top:52px; padding-bottom:80px;
+  padding-left:9%; padding-right:8%;
+  border-left:none;
+  border-bottom:4px solid var(--moss);
+}
+
+/* CH02 텐트 — 상단 오른쪽 */
+#ch02{
+  justify-content:flex-start;
+  padding-top:52px; padding-bottom:72px;
+  padding-left:8%; padding-right:9%;
+  border-left:none;
+  border-right:4px solid var(--sage);
+  align-items:flex-end; text-align:right;
+}
+#ch02 .ch-label{ justify-content:flex-end; }
+#ch02 .ch-label::before{ display:none; }
+#ch02 .ch-label::after{ content:''; display:inline-block;
+  width:24px; height:2px; background:var(--sage); border-radius:1px; }
+#ch02 .ch-desc{ text-align:right; }
+
+/* CH03 취사 — 수직 중앙, 왼쪽 */
+#ch03{
+  justify-content:center;
+  padding-left:9%; padding-right:8%;
+}
+
+/* CH04 야생동물 — 하단 오른쪽 */
+#ch04{
+  justify-content:flex-end;
+  padding-bottom:80px; padding-top:52px;
+  padding-left:8%; padding-right:9%;
+  border-left:none;
+  border-right:4px solid var(--ember);
+  align-items:flex-end; text-align:right;
+  background:
+    radial-gradient(ellipse 55% 65% at 15% 45%,rgba(107,76,42,.25) 0%,transparent 60%),
+    var(--forest2);
+}
+#ch04 .ch-label{ color:var(--ember); justify-content:flex-end; }
+#ch04 .ch-label::before{ display:none; }
+#ch04 .ch-label::after{ content:''; display:inline-block;
+  width:24px; height:2px; background:var(--ember); border-radius:1px; }
+#ch04 .ch-desc{ text-align:right; }
+
+/* CH05 기상 — 상단 왼쪽 (배경 차별화) */
+#ch05{
+  padding-left:9%;
+  background:
+    radial-gradient(ellipse 50% 55% at 85% 25%,rgba(74,124,89,.25) 0%,transparent 55%),
+    radial-gradient(ellipse 35% 40% at 20% 80%,rgba(69,130,180,.12) 0%,transparent 50%),
+    var(--forest2);
+}
+
+/* CH06 학폭 — 정중앙, 강렬한 배경 */
+#ch06{
+  justify-content:center; align-items:center; text-align:center;
+  border-left:none;
+  padding-left:10%; padding-right:10%;
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 50%,rgba(217,61,43,.2) 0%,transparent 65%),
+    #181010;
+}
+#ch06 .ch-label{ justify-content:center; color:#F87171; }
+#ch06 .ch-label::before{ background:#F87171; }
+#ch06 .ch-title{ text-align:center; }
+#ch06 .ch-desc{ text-align:center; max-width:560px; }
+#ch06 .ch-bg-num{ color:rgba(217,61,43,.06); }
+</style>
+</head>
+<body>
+<div id="deck">
+
+<!-- ══ S0 커버 ══ -->
+<div class="slide active" id="s0">
+  <div class="cover-left">
+    <div class="cover-kicker a">대구일중학교 1학년 · 수련활동 사전교육</div>
+    <div class="cover-title a">야영<span>.</span><br>안전교육</div>
+    <div class="cover-sub a">텐트 야영형 1박 2일</div>
+    <div class="cover-school a">대구일중학교 생활안전부</div>
+  </div>
+  <div class="cover-right a">
+    <div class="icon-grid">
+      <div class="deco">⛺<span>텐트 생활</span></div>
+      <div class="deco">🔥<span>화재·취사</span></div>
+      <div class="deco">🐍<span>야생동물</span></div>
+      <div class="deco">🚨<span>응급·신고</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S1 교육활동 선언 ══ -->
+<div class="slide alert-slide" id="s1">
+  <div class="slide-inner" style="padding-left:9%;padding-right:9%;">
+    <div class="tag tr a">⚠ 시작 전 반드시</div>
+    <div class="head1 a">야영은<br><span class="fg">교육활동</span>입니다.</div>
+    <div class="rule-line a"></div>
+    <div class="body a" style="max-width:680px;">
+      이번 야영은 학교 교육과정의 일부인 <strong>수련활동</strong>입니다.<br>
+      소풍이 아닙니다. 놀러 가는 것이 아닙니다.<br><br>
+      지도교사의 지시는 <strong>수업 중 교사 지시와 동일한 효력</strong>을 가집니다.<br>
+      규칙 위반·단체행동 이탈은 <strong>학교 생활규정에 따라 처리</strong>됩니다.<br>
+      교육활동 중 발생한 행위는 <strong>학교생활기록부에 기재</strong>될 수 있습니다.
+    </div>
+    <div class="banner bn-r a" style="max-width:680px;">
+      <div class="bi">📢</div>
+      <div class="bt">엄하게 말하는 이유는 하나입니다.<br>
+        <strong>여러분이 다치지 않고, 누군가를 다치게 하지 않기 위해서입니다.</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S2 휴대폰 ══ -->
+<div class="slide alert-slide" id="s2">
+  <div class="slide-inner" style="padding-left:9%;padding-right:9%;gap:16px;">
+    <div class="tag tr a">📱 휴대폰 정책</div>
+    <div class="head1 a" style="margin-bottom:6px;">휴대폰은<br><span class="em">야영지 도착 즉시</span><br>수거합니다.</div>
+    <div class="rule-line a" style="margin:8px 0 16px;"></div>
+
+    <!-- 두 박스 -->
+    <div class="cols a" style="gap:16px;flex:1;align-items:stretch;">
+      <div class="card card-r" style="padding:28px 32px;display:flex;flex-direction:column;gap:18px;">
+        <div class="ctitle rd" style="font-size:clamp(15px,1.5vw,18px);">수거 규정</div>
+        <ul class="ilist red" style="gap:18px;">
+          <li style="font-size:clamp(16px,1.65vw,20px);white-space:nowrap;">
+            야영지 도착 후 <strong>버스 하차 시</strong> 담임교사가 수거
+          </li>
+          <li style="font-size:clamp(16px,1.65vw,20px);white-space:nowrap;">
+            몰래 소지하다 적발 시 → <strong>즉시 분리보관</strong>
+          </li>
+          <li style="font-size:clamp(16px,1.65vw,20px);white-space:nowrap;">
+            적발 휴대폰은 <strong>5월 4일(연휴 후 등교일)</strong> 반환
+          </li>
+        </ul>
+      </div>
+      <div class="card card-s" style="padding:28px 32px;display:flex;flex-direction:column;gap:18px;">
+        <div class="ctitle em" style="font-size:clamp(15px,1.5vw,18px);">이유가 있습니다</div>
+        <ul class="ilist chk" style="gap:18px;">
+          <li style="font-size:clamp(16px,1.65vw,20px);white-space:nowrap;">야간 촬영·SNS 유포 사고 예방</li>
+          <li style="font-size:clamp(16px,1.65vw,20px);white-space:nowrap;">수면 방해 방지</li>
+          <li style="font-size:clamp(16px,1.65vw,20px);white-space:nowrap;">교육활동 집중도 유지</li>
+          <li style="font-size:clamp(16px,1.65vw,20px);white-space:nowrap;">연락 필요 시 → <strong>담임 선생님 통해 가능</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 하단 배너 크게 -->
+    <div class="banner bn-s a" style="padding:22px 28px;margin-top:0;">
+      <div class="bi" style="font-size:28px;">📅</div>
+      <div class="bt" style="font-size:clamp(15px,1.55vw,19px);line-height:1.8;">
+        수거한 휴대폰은 귀교 후 <strong>학교에서 분리보관</strong>하며,<br>
+        다음날은 노동절(공휴일)이므로 <strong>5월 4일 등교 시 반환</strong>합니다.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S3 목차 ══ -->
+<div class="slide" id="s3">
+  <div class="slide-inner">
+    <div class="tag tg a">목차</div>
+    <div class="head2 a">오늘 20분 동안 배울 내용</div>
+    <div class="cols3 a">
+      <div class="card" style="text-align:center;padding:24px 16px;">
+        <div style="font-size:34px;margin-bottom:12px;">🚌</div>
+        <div style="font-size:12px;color:var(--sage);font-weight:700;margin-bottom:6px;letter-spacing:1px;">01</div>
+        <div style="font-size:17px;font-weight:700;color:var(--white);margin-bottom:6px;">이동 안전</div>
+        <div style="font-size:13px;color:var(--dim);line-height:1.5;">버스 탑승·하차</div>
+      </div>
+      <div class="card" style="text-align:center;padding:24px 16px;">
+        <div style="font-size:34px;margin-bottom:12px;">⛺</div>
+        <div style="font-size:12px;color:var(--sage);font-weight:700;margin-bottom:6px;letter-spacing:1px;">02</div>
+        <div style="font-size:17px;font-weight:700;color:var(--white);margin-bottom:6px;">텐트 생활</div>
+        <div style="font-size:13px;color:var(--dim);line-height:1.5;">남녀분리·밀폐 위험</div>
+      </div>
+      <div class="card" style="text-align:center;padding:24px 16px;">
+        <div style="font-size:34px;margin-bottom:12px;">🍳</div>
+        <div style="font-size:12px;color:var(--sage);font-weight:700;margin-bottom:6px;letter-spacing:1px;">03</div>
+        <div style="font-size:17px;font-weight:700;color:var(--white);margin-bottom:6px;">취사 안전</div>
+        <div style="font-size:13px;color:var(--dim);line-height:1.5;">버너·고기 굽기</div>
+      </div>
+      <div class="card" style="text-align:center;padding:24px 16px;">
+        <div style="font-size:34px;margin-bottom:12px;">🐍</div>
+        <div style="font-size:12px;color:var(--sage);font-weight:700;margin-bottom:6px;letter-spacing:1px;">04</div>
+        <div style="font-size:17px;font-weight:700;color:var(--white);margin-bottom:6px;">야생동물·곤충</div>
+        <div style="font-size:13px;color:var(--dim);line-height:1.5;">뱀 대처 중점</div>
+      </div>
+      <div class="card" style="text-align:center;padding:24px 16px;">
+        <div style="font-size:34px;margin-bottom:12px;">🌡️</div>
+        <div style="font-size:12px;color:var(--sage);font-weight:700;margin-bottom:6px;letter-spacing:1px;">05</div>
+        <div style="font-size:17px;font-weight:700;color:var(--white);margin-bottom:6px;">기상·체온 안전</div>
+        <div style="font-size:13px;color:var(--dim);line-height:1.5;">열사병·수분보충</div>
+      </div>
+      <div class="card" style="text-align:center;padding:24px 16px;">
+        <div style="font-size:34px;margin-bottom:12px;">🛡️</div>
+        <div style="font-size:12px;color:var(--sage);font-weight:700;margin-bottom:6px;letter-spacing:1px;">06</div>
+        <div style="font-size:17px;font-weight:700;color:var(--white);margin-bottom:6px;">학교폭력·응급신고</div>
+        <div style="font-size:13px;color:var(--dim);line-height:1.5;">야외 적용 원칙</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S4 CH01 챕터 ══ -->
+<div class="slide ch-slide" id="ch01">
+  <div class="ch-bg-num">01</div>
+  <div class="ch-label a">Chapter 01</div>
+  <div class="ch-title a">이동 안전<br>🚌 버스 탑승과 하차</div>
+  <div class="ch-desc a">사고는 목적지에서만 나는 게 아닙니다.<br>출발부터 도착까지 전 과정이 교육활동입니다.</div>
+</div>
+
+<!-- ══ S5 이동 안전 내용 ══ -->
+<div class="slide">
+  <div class="slide-inner">
+    <div class="tag tg a">01 이동 안전</div>
+    <div class="head2 a">버스 안에서의 약속</div>
+    <div class="steps a">
+      <div class="step">
+        <div class="snum">1</div>
+        <div class="sbody"><strong>탑승 즉시 안전벨트 착용</strong>
+          '딸깍' 소리가 날 때까지. 어깨·골반선에 위치. 급정거 시 안전벨트 없으면 앞좌석에 얼굴이 충돌합니다.</div>
+      </div>
+      <div class="step">
+        <div class="snum">2</div>
+        <div class="sbody"><strong>이동 중 통로 이동·장난 금지</strong>
+          버스가 움직이는 동안 자리 이동은 전도 사고로 이어집니다. 통로는 비상 탈출 경로.</div>
+      </div>
+      <div class="step">
+        <div class="snum">3</div>
+        <div class="sbody"><strong>하차 시 도로 확인 후 이동</strong>
+          차에서 내리면 즉시 인도로. 절대 뛰지 않기. 반대편 차량 먼저 확인.</div>
+      </div>
+      <div class="step">
+        <div class="snum">4</div>
+        <div class="sbody"><strong>선생님 지시 전 독단 이동 절대 금지</strong>
+          현장 도착 후 "잠깐 저기만요"가 사고의 시작입니다. 항상 2인 이상, 선생님께 먼저 보고.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S6 CH02 챕터 ══ -->
+<div class="slide ch-slide" id="ch02">
+  <div class="ch-bg-num">02</div>
+  <div class="ch-label a">Chapter 02</div>
+  <div class="ch-title a">텐트 생활 안전<br>⛺ 남녀 구역 분리 운영</div>
+  <div class="ch-desc a">텐트는 방이 아닙니다.<br>밀폐 공간의 위험과 구역 경계, 반드시 지킵니다.</div>
+</div>
+
+<!-- ══ S7 텐트 내용 ══ -->
+<div class="slide">
+  <div class="slide-inner">
+    <div class="tag tg a">02 텐트 생활</div>
+    <div class="head2 a">텐트 안전 수칙</div>
+    <div class="cols a">
+      <div>
+        <div class="card card-g" style="margin-bottom:14px;">
+          <div class="ctitle sg">✅ 해야 할 것</div>
+          <ul class="ilist chk">
+            <li>취침 전 <strong>환기 유지</strong> (출입구 일부 개방)</li>
+            <li>야간 이동은 <strong>반드시 2인 이상</strong></li>
+            <li>랜턴 사용, 라이터·성냥 소지 금지</li>
+          </ul>
+        </div>
+        <div class="card card-r">
+          <div class="ctitle rd">⛔ 절대 금지</div>
+          <ul class="ilist red">
+            <li>텐트 안 <strong>버너·모기향 사용</strong> → 일산화탄소 중독</li>
+            <li>텐트 안 <strong>음식 보관</strong> → 야생동물 유인</li>
+            <li>야간 <strong>무단 단독 이탈</strong></li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="card card-b" style="margin-bottom:14px;">
+          <div class="ctitle em">🚧 남녀 구역 분리 운영</div>
+          <ul class="ilist" style="gap:10px;">
+            <li>상대 성별 구역에 <strong>허락 없이 출입하는 것은 학교폭력</strong></li>
+            <li>화장실 이동 → <strong>같은 성별 2인 이상 동행</strong></li>
+            <li>불편한 일 → <strong>주변에 있는 선생님 또는 수련지도사 선생님께 직접 말하기</strong></li>
+          </ul>
+          <div class="banner bn-f" style="margin-top:12px;">
+            <div class="bi">💬</div>
+            <div class="bt"><strong>신고가 자신을 지키는 가장 용기 있는 행동입니다.</strong></div>
+          </div>
+        </div>
+        <!-- 아프면 즉시 말하기 강조 -->
+        <div class="sick-banner">
+          <div class="sick-icon">🤒</div>
+          <div class="sick-text">
+            <strong>밤에 아프면 참지 마세요.</strong><br>
+            끙끙대다가 더 커질 수 있습니다.<br>
+            두통·복통·발열·벌레 물림 — 무엇이든<br>
+            <strong>즉시 담임 선생님 또는 수련지도사 선생님께 알리세요.</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S8 CH03 챕터 ══ -->
+<div class="slide ch-slide" id="ch03">
+  <div class="ch-bg-num">03</div>
+  <div class="ch-label a">Chapter 03</div>
+  <div class="ch-title a">취사 안전<br>🍳 요리도 교육입니다</div>
+  <div class="ch-desc a">밥 짓고 고기 굽는 것, 직접 해봐야 배웁니다.<br>단, 안전하게 할 때만 맛있습니다.</div>
+</div>
+
+<!-- ══ S9 취사 버너 ══ -->
+<div class="slide">
+  <div class="slide-inner">
+    <div class="tag tf a">03-A 버너 안전</div>
+    <div class="head2 a">버너는 어른과 함께 <span style="color:var(--fire);">반드시</span></div>
+    <div class="cols a">
+      <div class="steps" style="gap:9px;">
+        <div class="step" style="background:rgba(217,61,43,.07);border-color:rgba(217,61,43,.2);">
+          <div class="snum" style="background:var(--danger);">✕</div>
+          <div class="sbody"><strong>학생 단독 점화·소화 절대 금지</strong>
+            가스 연결·점화·끄기 모두 지도교사 입회 하에만.</div>
+        </div>
+        <div class="step" style="background:rgba(217,61,43,.07);border-color:rgba(217,61,43,.2);">
+          <div class="snum" style="background:var(--danger);">✕</div>
+          <div class="sbody"><strong>텐트 근처·밀폐 공간 버너 사용 금지</strong>
+            일산화탄소(CO)는 무색·무취. 증상 없이 의식을 잃습니다.</div>
+        </div>
+        <div class="step">
+          <div class="snum">1</div>
+          <div class="sbody"><strong>사용 후 부탄가스 분리하여 반납 (매 끼니마다)</strong>
+            가스를 연결된 채로 두는 것 자체가 위험합니다. 사용 즉시 분리해서 선생님께 반납.</div>
+        </div>
+        <div class="step">
+          <div class="snum">2</div>
+          <div class="sbody"><strong>조리 구역에서만 사용 · 주변 낙엽·풀 사전 제거</strong>
+            바람 방향 확인 후 점화. 사용 후 불씨 완전 소화 확인.</div>
+        </div>
+      </div>
+      <div>
+        <div class="card card-f" style="margin-bottom:14px;">
+          <div class="ctitle em">🍚 취사는 교육의 일부입니다</div>
+          <ul class="ilist chk" style="gap:9px;">
+            <li><strong>밥 짓기·반찬 만들기</strong>는 직접 해봐야 배웁니다</li>
+            <li>조별로 역할 분담 후 <strong>다 함께 참여</strong></li>
+            <li>간편식(즉석식품)에만 의존하면 배울 것이 없습니다</li>
+            <li>설거지·뒷정리까지가 <strong>취사 교육</strong>입니다</li>
+          </ul>
+        </div>
+        <div class="card card-f">
+          <div class="ctitle rd">🔥 화재 발생 시</div>
+          <ul class="ilist chk" style="gap:8px;">
+            <li><strong>"불이야!"</strong> 크게 외쳐 주변 알리기</li>
+            <li>작은 불이어도 <strong>혼자 끄려 하지 말 것</strong></li>
+            <li>연기를 <strong>등지고 낮은 자세</strong>로 대피</li>
+            <li>대피 후 선생님 보고</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S10 고기 굽기 ══ -->
+<div class="slide">
+  <div class="slide-inner">
+    <div class="tag tf a">03-B 고기 굽기 주의</div>
+    <div class="head2 a"><span style="color:var(--fire);">덜 익은 고기</span>는 야영을 망칩니다</div>
+    <div class="cols a" style="align-items:flex-start;">
+      <div>
+        <div class="card card-r" style="margin-bottom:14px;">
+          <div class="ctitle rd">⚠️ 왜 위험한가</div>
+          <ul class="ilist red" style="gap:9px;">
+            <li>덜 익은 고기 → <strong>캠필로박터·살모넬라균</strong></li>
+            <li>증상: <strong>구토·설사·복통</strong> → 야영 중 최악</li>
+            <li>탈수 동반 → 응급 이송 가능</li>
+            <li>특히 <strong>돼지고기·닭고기</strong>는 속까지 반드시</li>
+          </ul>
+        </div>
+        <div class="banner bn-f">
+          <div class="bi">🍖</div>
+          <div class="bt"><strong>두꺼운 삼겹살 사온 조는 특히 주의!</strong><br>
+            겉은 타도 속이 생고기인 경우가 많습니다.</div>
+        </div>
+      </div>
+      <div class="card card-g">
+        <div class="ctitle sg">✅ 고기 굽기 체크리스트</div>
+        <ul class="ilist chk" style="gap:12px;">
+          <li>두께 <strong>1cm 이하</strong> 권장<br>
+            <span style="font-size:12px;color:var(--sage);">두꺼우면 칼로 잘라서 단면 직접 확인</span></li>
+          <li>단면 색깔 → <strong>분홍색 = 덜 익음</strong><br>
+            <span style="font-size:12px;color:var(--sage);">회갈색으로 완전히 변해야 안전</span></li>
+          <li>익힌 고기·생고기 <strong>집게 분리</strong> 사용</li>
+          <li>먹다 남은 고기 <strong>장시간 상온 방치 금지</strong><br>
+            <span style="font-size:12px;color:var(--sage);">여름철 2시간 이상 방치 → 폐기</span></li>
+        </ul>
+        <div class="divider"></div>
+        <div style="font-size:14px;color:var(--dim);line-height:1.8;">
+          배탈 증상(구역질·복통) 발생 즉시<br>
+          <strong style="color:var(--cream);">담임 선생님 또는 수련지도사 선생님께 보고</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S11 CH04 챕터 ══ -->
+<div class="slide ch-slide" id="ch04">
+  <div class="ch-bg-num">04</div>
+  <div class="ch-label a">Chapter 04</div>
+  <div class="ch-title a">야생동물 · 곤충<br>🐍 뱀을 조심하세요</div>
+  <div class="ch-desc a">이번 야영지에서 뱀 출몰 가능성이 있습니다.<br>자연을 건드리지 않는 것이 최선입니다.</div>
+</div>
+
+<!-- ══ S12 뱀 대처 ══ -->
+<div class="slide">
+  <div class="slide-inner">
+    <div class="tag ts a">04-A 뱀 대처 (중요)</div>
+    <div class="head2 a">뱀을 만났을 때,<br><span style="color:var(--ember);">이것만 기억하세요</span></div>
+    <div class="snake-box a">
+      <div class="snake-box-title">🐍 뱀 3대 원칙</div>
+      <div class="snake-grid">
+        <div class="snake-cell">
+          <div class="sci">🛑</div>
+          <div class="sct">멈추기</div>
+          <div class="scd">갑작스러운 움직임이<br>뱀을 자극합니다.<br>그 자리에서 정지.</div>
+        </div>
+        <div class="snake-cell">
+          <div class="sci">🚶</div>
+          <div class="sct">천천히 물러서기</div>
+          <div class="scd">뒤로 천천히 이동.<br>충분히 멀어질 때까지.<br>절대 뛰지 않기.</div>
+        </div>
+        <div class="snake-cell">
+          <div class="sci">📢</div>
+          <div class="sct">즉시 알리기</div>
+          <div class="scd">선생님·친구에게<br>위치와 상황 알리기.<br>혼자 처리 금지.</div>
+        </div>
+      </div>
+    </div>
+    <div class="cols a" style="margin-top:14px;">
+      <div class="card card-r">
+        <div class="ctitle rd">❌ 절대 하지 말 것</div>
+        <ul class="ilist red" style="gap:9px;">
+          <li>막대기로 건드리거나 <strong>공격하는 행동</strong></li>
+          <li>사진 찍으려고 <strong>가까이 다가가기</strong></li>
+          <li>뱀을 향해 <strong>소리지르거나 뛰어가기</strong></li>
+          <li>뱀이 떠날 때까지 <strong>그 자리 서성이기</strong></li>
+        </ul>
+      </div>
+      <div class="card card-r">
+        <div class="ctitle rd">🏥 물렸을 때 응급처치</div>
+        <ul class="ilist chk" style="gap:9px;">
+          <li><strong>움직임 최소화</strong> (독 빠르게 퍼짐)</li>
+          <li>물린 부위를 <strong>심장 아래</strong>로 유지</li>
+          <li><strong>절대 입으로 독 빨지 않기</strong></li>
+          <li>반지·시계 등 <strong>조이는 것 제거</strong></li>
+          <li><strong>즉시 선생님께 알리기</strong> → 119 신고</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S13 벌·진드기 ══ -->
+<div class="slide">
+  <div class="slide-inner">
+    <div class="tag ts a">04-B 벌·진드기·야생식물</div>
+    <div class="head2 a">그 밖의 야생동물 주의</div>
+    <div class="cols3 a">
+      <div class="card card-b">
+        <div style="font-size:32px;margin-bottom:12px;">🐝</div>
+        <div class="ctitle em">벌을 만났을 때</div>
+        <ul class="ilist" style="gap:8px;">
+          <li>빠르게 움직이지 말 것</li>
+          <li>손 흔들거나 소리지르지 않기</li>
+          <li>천천히 뒷걸음질로 벗어나기</li>
+          <li>검은 옷·진한 향수 주의</li>
+        </ul>
+        <div class="divider"></div>
+        <div style="font-size:13px;color:var(--dim);line-height:1.75;">
+          <strong style="color:var(--ember);">쏘였다면 →</strong><br>
+          카드로 옆으로 밀어 침 제거<br>
+          냉찜질 → 선생님 즉시 보고<br>
+          알레르기 반응 시 즉각 신고
+        </div>
+      </div>
+      <div class="card card-b">
+        <div style="font-size:32px;margin-bottom:12px;">🦟</div>
+        <div class="ctitle em">진드기 예방</div>
+        <ul class="ilist" style="gap:8px;">
+          <li>긴 소매·긴 바지 착용 권장</li>
+          <li>풀밭에 그냥 눕지 않기</li>
+          <li>필요하다면 <strong>방충제 사용</strong></li>
+          <li>풀숲 통과 후 온몸 확인</li>
+        </ul>
+        <div class="divider"></div>
+        <div style="font-size:13px;color:var(--dim);line-height:1.75;">
+          <strong style="color:var(--ember);">발견 시 →</strong><br>
+          손으로 잡아 뜯지 않기<br>
+          선생님께 즉시 보고 → 전문 처치
+        </div>
+      </div>
+      <div class="card card-s">
+        <div style="font-size:32px;margin-bottom:12px;">🌿</div>
+        <div class="ctitle em">야생 식물 주의</div>
+        <ul class="ilist" style="gap:8px;">
+          <li>야생 <strong>버섯·열매 절대 섭취 금지</strong></li>
+          <li>독초 판단은 전문가도 어렵습니다</li>
+          <li>예뻐도 함부로 만지지 말기</li>
+          <li>텐트 안 음식 보관 금지</li>
+        </ul>
+        <div class="divider"></div>
+        <div class="banner bn-g" style="margin-top:0;padding:12px 14px;">
+          <div class="bi" style="font-size:16px;">🌲</div>
+          <div class="bt" style="font-size:12px;"><strong>건드리지 않으면 건드리지 않습니다.</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S14 CH05 챕터 ══ -->
+<div class="slide ch-slide" id="ch05">
+  <div class="ch-bg-num">05</div>
+  <div class="ch-label a">Chapter 05</div>
+  <div class="ch-title a">기상 · 체온 안전<br>🌡️ 내 몸 상태를 챙깁니다</div>
+  <div class="ch-desc a">열사병과 저체온증은 알면 막을 수 있습니다.<br>수분 보충은 선택이 아니라 의무입니다.</div>
+</div>
+
+<!-- ══ S15 기상·체온 ══ -->
+<div class="slide">
+  <div class="slide-inner">
+    <div class="tag ts a">05 기상·체온 안전</div>
+    <div class="head2 a">알면 살 수 있습니다</div>
+    <div class="cols a">
+      <div class="card card-r">
+        <div class="ctitle rd">☀️ 열사병·열탈진</div>
+        <div style="font-size:14px;color:var(--dim);margin-bottom:12px;line-height:1.7;">
+          <strong style="color:#F87171;">증상:</strong> 체온 급상승, 두통, 어지럼증, 구역질, 의식 혼탁
+        </div>
+        <ul class="ilist chk" style="gap:9px;">
+          <li>즉시 <strong>그늘·서늘한 곳</strong>으로 이동</li>
+          <li>옷 느슨하게 → <strong>목·겨드랑이·사타구니</strong> 찬 물수건</li>
+          <li>의식 있으면 <strong>물 천천히</strong> 마시게 하기</li>
+          <li>의식 없으면 <strong>즉시 선생님께 알리기</strong></li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="ctitle sg">❄️ 저체온증</div>
+        <div style="font-size:14px;color:var(--dim);margin-bottom:12px;line-height:1.7;">
+          <strong style="color:var(--sage);">증상:</strong> 심한 떨림, 말이 어눌, 움직임 둔화, 의식 저하
+        </div>
+        <ul class="ilist chk" style="gap:9px;">
+          <li>즉시 <strong>따뜻한 장소</strong>로 이동</li>
+          <li>젖은 옷 제거 → <strong>담요·침낭</strong>으로 전신 보온</li>
+          <li>따뜻한 음료 (의식 있을 때만)</li>
+          <li><strong>마사지·알코올 금지</strong> → 선생님 즉시 알리기</li>
+        </ul>
+      </div>
+    </div>
+    <div class="steps a" style="gap:9px;margin-top:14px;">
+      <div class="step">
+        <div class="snum" style="background:var(--moss);">💧</div>
+        <div class="sbody"><strong>수분 보충: 30분마다 물 한 컵, 하루 최소 1.5L</strong>
+          갈증이 없어도 마십니다. 에너지음료·탄산은 오히려 탈수를 악화시킵니다.</div>
+      </div>
+      <div class="step">
+        <div class="snum" style="background:var(--bark);">⚡</div>
+        <div class="sbody"><strong>번개 발생 시 나무·높은 곳에서 즉시 멀어지기</strong>
+          낮은 자세로 이동. 혼자 고립 절대 금지. 선생님 지시에 따라 신속 대피.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S16 CH06 챕터 ══ -->
+<div class="slide ch-slide" id="ch06">
+  <div class="ch-bg-num">06</div>
+  <div class="ch-label a">Chapter 06</div>
+  <div class="ch-title a">학교폭력 예방<br>🛡️ 야외라고 달라지지 않습니다</div>
+  <div class="ch-desc a">학교폭력은 교실에서만 일어나지 않습니다.<br>야영 중에도 학교 규정은 그대로 적용됩니다.</div>
+</div>
+
+<!-- ══ S17 학교폭력 내용 ══ -->
+<div class="slide">
+  <div class="slide-inner">
+    <div class="tag tr a">06 학교폭력 예방</div>
+    <div class="head2 a">야영 중 발생하는<br><span style="color:var(--fire);">학교폭력 유형</span></div>
+    <div class="cols a" style="align-items:flex-start;">
+      <div class="card card-r">
+        <div class="ctitle rd">⚠️ 이런 것도 학교폭력입니다</div>
+        <ul class="ilist red" style="gap:11px;">
+          <li>텐트 안에서 <strong>특정인 심부름 강요</strong>, 망 보게 하기</li>
+          <li>수면 중 <strong>장난·신체 접촉</strong></li>
+          <li>허락 없이 <strong>사진·영상 촬영</strong> 후 공유·협박</li>
+          <li><strong>이성 구역 무단 침입</strong></li>
+          <li><strong>활동 중 특정인 놀리기·따돌리기</strong></li>
+          <li>음식 빼앗기, <strong>취사 도구 청소 강요</strong></li>
+        </ul>
+      </div>
+      <div>
+        <div class="card card-g" style="margin-bottom:14px;">
+          <div class="ctitle sg">📞 신고 방법</div>
+          <ul class="ilist chk" style="gap:10px;">
+            <li>담임·수련지도사 선생님께 <strong>직접 말하기</strong></li>
+            <li><strong>117</strong> 학교폭력 신고센터 (24시간, 공중전화 가능)</li>
+            <li>귀교 후 <strong>학교폭력 신고함</strong> 이용</li>
+          </ul>
+        </div>
+        <div class="card card-b">
+          <div class="ctitle em">💬 방관자도 가담입니다</div>
+          <div style="font-size:clamp(14px,1.4vw,16px);color:var(--dim);line-height:1.9;">
+            "신고하면 배신자"라는 말은 틀렸습니다.<br>
+            <strong style="color:var(--cream);">보고만 있는 것도 폭력에 가담하는 것입니다.</strong><br>
+            친구를 지키는 행동이 진짜 용기입니다.
+          </div>
+        </div>
+        <div class="banner bn-f" style="margin-top:12px;">
+          <div class="bi">📌</div>
+          <div class="bt"><strong>장난과 폭력의 경계는 내 의도가 아니라 상대의 감정입니다.</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S18 응급처치·신고 ══ -->
+<div class="slide">
+  <div class="slide-inner">
+    <div class="tag tr a">응급처치 · 신고</div>
+    <div class="head2 a">도움 요청이 곧 구조입니다</div>
+    <div class="cols a" style="align-items:flex-start;">
+      <div>
+        <div class="sick-banner" style="margin-top:0;margin-bottom:16px;">
+          <div class="sick-icon">🤒</div>
+          <div class="sick-text">
+            <strong>아프면 절대 참지 마세요.</strong><br>
+            밤에 끙끙대다 더 커질 수 있습니다.<br>
+            <strong>담임 선생님 또는 수련지도사 선생님께<br>즉시 알리세요.</strong>
+          </div>
+        </div>
+        <div class="steps" style="gap:9px;">
+          <div class="step" style="background:rgba(217,61,43,.08);border-color:rgba(217,61,43,.2);">
+            <div class="snum" style="background:var(--danger);">1</div>
+            <div class="sbody"><strong>담임 선생님·수련지도사에게 즉시 알리기</strong>
+              가장 먼저. 상황·위치·증상 설명.</div>
+          </div>
+          <div class="step" style="background:rgba(217,61,43,.08);border-color:rgba(217,61,43,.2);">
+            <div class="snum" style="background:var(--danger);">2</div>
+            <div class="sbody"><strong>캠핑장 관리소 연락 (선생님이 진행)</strong>
+              캠핑장 이름 + 구역 번호 파악해두기.</div>
+          </div>
+          <div class="step" style="background:rgba(217,61,43,.08);border-color:rgba(217,61,43,.2);">
+            <div class="snum" style="background:var(--danger);">3</div>
+            <div class="sbody"><strong>119 신고 (선생님이 진행)</strong>
+              위치·인원·의식 여부 설명. 끊지 말고 지시 따르기.</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ctitle sg">🩹 기본 응급처치</div>
+        <ul class="ilist" style="gap:12px;">
+          <li><strong>출혈·상처:</strong> 깨끗한 천으로 눌러 지혈. 깊은 상처는 선생님 즉시 보고.</li>
+          <li><strong>골절 의심:</strong> 절대 움직이지 말고 고정. 함부로 잡아당기지 않기.</li>
+          <li><strong>발목 삐었을 때:</strong> RICE — 휴식·얼음찜질·압박·들어올리기.</li>
+          <li><strong>구토·복통(식중독):</strong> 수분 보충하면서 즉시 선생님께 보고.</li>
+          <li><strong>의식 없음:</strong> 반응 확인 → 없으면 선생님 즉시 호출 + CPR.</li>
+        </ul>
+        <div class="divider"></div>
+        <div class="ctitle em" style="margin-bottom:8px;">📞 비상연락 순서</div>
+        <div style="font-size:clamp(14px,1.4vw,16px);color:var(--dim);line-height:2.1;">
+          <strong style="color:var(--cream);">① 담임 선생님</strong><br>
+          <strong style="color:var(--cream);">② 수련지도사 선생님</strong><br>
+          <strong style="color:var(--cream);">③ 캠핑장 관리소</strong><br>
+          <strong style="color:var(--cream);">④ 119</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S19 마무리 ══ -->
+<div class="slide" id="s-outro">
+  <div style="font-size:60px;margin-bottom:18px;" class="a">🏕️</div>
+  <div class="head1 a" style="font-size:clamp(28px,4vw,46px);margin-bottom:14px;">
+    딱 <span class="em">네 가지</span>만 기억하세요
+  </div>
+  <div class="body a" style="margin-bottom:28px;">오늘 배운 것 중 핵심 중의 핵심입니다.</div>
+  <div class="pledge a">
+    <p>
+      하나. <strong>혼자 다니지 않는다.</strong><br>
+      둘. <strong>아프거나 불편하면 즉시 선생님께 말한다.</strong><br>
+      셋. <strong>고기는 완전히 익혀서 먹는다.</strong><br>
+      넷. <strong>뱀은 절대 건드리지 않는다.</strong>
+    </p>
+  </div>
+  <div class="pill-row a">
+    <div class="pill sg">야영은 교육활동입니다</div>
+    <div class="pill">휴대폰은 학교 보관</div>
+    <div class="pill sg">117 학교폭력 신고</div>
+    <div class="pill">담임·수련지도사 선생님께</div>
+  </div>
+  <div style="margin-top:22px;font-size:12px;color:var(--moss);letter-spacing:.5px;" class="a">
+    대구일중학교 생활안전부 · 교육부 학교안전교육 7대 표준안 기반
+  </div>
+</div>
+
+</div><!-- /deck -->
+
+<div id="prog-wrap"><div id="prog-bar"></div></div>
+<div id="counter"><em id="cur">1</em> / <span id="tot"></span></div>
+<div id="nav">
+  <button class="nbtn" id="btn-prev">←</button>
+  <button class="nbtn" id="btn-next">→</button>
+</div>
+
+<script>
+const slides = Array.from(document.querySelectorAll('.slide'));
+const n = slides.length;
+let c = 0;
+document.getElementById('tot').textContent = n;
+document.getElementById('prog-bar').style.width = (1/n*100)+'%';
+
+function go(i){
+  if(i<0||i>=n)return;
+  slides[c].classList.remove('active');
+  c=i;
+  slides[c].classList.add('active');
+  document.getElementById('cur').textContent=c+1;
+  document.getElementById('prog-bar').style.width=((c+1)/n*100)+'%';
+}
+document.getElementById('btn-next').onclick=()=>go(c+1);
+document.getElementById('btn-prev').onclick=()=>go(c-1);
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();go(c+1);}
+  if(e.key==='ArrowLeft'){e.preventDefault();go(c-1);}
+});
+let tx=0;
+document.addEventListener('touchstart',e=>tx=e.touches[0].clientX,{passive:true});
+document.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tx;
+  if(dx<-50)go(c+1);if(dx>50)go(c-1);
+},{passive:true});
+</script>
+</body>
+</html>
